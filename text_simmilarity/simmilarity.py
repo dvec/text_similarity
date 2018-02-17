@@ -37,15 +37,18 @@ class SimilarityAnalyzer:
         for i in s1:
             i = stemmer.stemWord(i)
 
+            if i not in self._w2v.wv:
+                continue
+            cnt += 1
+
             m = -float('inf')
             for j in s2:
                 j = stemmer.stemWord(j)
                 if i in self._w2v.wv and j in self._w2v.wv:
                     similarity = self._w2v.wv.similarity(i, j) * self._tfidf(s2, j)
                     m = max(m, similarity)
-                    cnt += 1
             r += m
-        return r / len(s1)
+        return r / max(cnt, 1)
 
     def similarity(self, s1, s2):
         if len(s1.split()) > len(s2.split()):
@@ -58,7 +61,7 @@ class SimilarityAnalyzer:
             for j in s2:
                 m = max(m, self._sentence_similarity(i, j))
             r += m
-        return r / len(s1)
+        return r / max(len(s1), 1)
 
     def save(self):
         if self._save_w2v:
