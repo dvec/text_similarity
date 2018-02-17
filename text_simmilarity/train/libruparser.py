@@ -1,9 +1,9 @@
 import cgi
 import re
-from text_simmilarity.utils import stemmer
 
 import requests
-from gensim.utils import simple_preprocess
+
+from text_simmilarity.utils import prepare
 
 
 class LibRuParser:
@@ -36,13 +36,8 @@ class LibRuParser:
             for new_match in new_matches:
                 full_full_url = full_url + new_match
                 for file in map(full_full_url.__add__, self.PATTERN_2.findall(self._curl(full_full_url))):
-                    for i in self._prepare(self._curl(file)):
+                    for i in prepare(self._curl(file)):
                         yield i
                         self.left -= 1
                         if self.left <= 0:
                             return
-
-    def _prepare(self, text):
-        text = self.PATTERN_3.sub('', text)
-        lines = filter(bool, text.split('\n'))
-        return map(simple_preprocess, [' '.join(stemmer.stemWords(l.split())) for l in lines])
