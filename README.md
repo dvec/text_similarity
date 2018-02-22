@@ -15,7 +15,7 @@ print(analyzer.similarity(s1, s2))
 ```
 ## Categorization
 ```python
-from text_simmilarity.simmilarity import SimilarityAnalyzer
+from text_simmilarity import SimilarityAnalyzer
 
 categories = ['полететь на марс', 'заказать пиццу', 'погладить кота']
 questions = ['Привет, мурзик', 'Это пиццерия?', 'Эй, Илон, где звездный человек?']
@@ -30,10 +30,17 @@ if __name__ == '__main__':
 ```
 ## Training
 ```python
-from text_simmilarity.simmilarity import SimilarityAnalyzer
+from text_simmilarity import SimilarityAnalyzer, LibRuParser
 
 if __name__ == '__main__':
-    analyzer = SimilarityAnalyzer.train(10000)
+    analyzer = SimilarityAnalyzer.empty()
+    analyzer.train(LibRuParser(1000), update=False)
 ```
-## TODO
-Test
+## Continue training
+```python
+from text_simmilarity import SimilarityAnalyzer, LibRuParser
+
+if __name__ == '__main__':
+    analyzer = SimilarityAnalyzer.load()
+    analyzer.train(LibRuParser(1000))
+```
