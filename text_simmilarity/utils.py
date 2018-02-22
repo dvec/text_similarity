@@ -7,10 +7,10 @@ stemmer = Stemmer('ru')
 
 
 def prepare(text, min_len=2):
-    text = re.sub('[^а-яА-Я\s]', '', text).replace('.', ' . ')
+    text = re.sub('[^а-я\s]', '', text.lower()).replace('.', ' . ')
     result = [[]]
 
-    for word in text.lower().split():
+    for word in text.split():
         word = stemmer.stemWord(word)
         if not word or len(word) < min_len:
             continue

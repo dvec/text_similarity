@@ -1,13 +1,10 @@
-from time import time
-
-from text_simmilarity.simmilarity import SimilarityAnalyzer
+from text_simmilarity import SimilarityAnalyzer
 
 categories = ['полететь на марс', 'заказать пиццу', 'погладить кота']
 
 if __name__ == '__main__':
-    start = time()
     analyzer = SimilarityAnalyzer.load()
-    print('LOADED {} at sec'.format(time() - start))
+
     while 1:
         s = input()
         a = []
