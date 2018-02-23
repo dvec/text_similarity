@@ -5,22 +5,18 @@ from text_simmilarity.train.iparser import IParser
 
 
 class FileParser(IParser):
-    def __init__(self, files, **kwargs):
+    def __init__(self, directory, **kwargs):
         """
-        :param files: List of files to read or directories with files
+        :param files: Directory with files to parse
         :param count: Count of files to read
         """
         super().__init__(**kwargs)
-        self._files = files
+        self._directory = directory
 
     def find_files(self):
-        for file in self._files:
-            if isdir(file):
-                for r, _, f in walk(file):
-                    for f_ in f:
-                        yield r + sep + f_
-            else:
-                yield file
+        for r, _, f in walk(self._directory):
+                for f_ in f:
+                    yield r + sep + f_
 
     def _get_data(self):
         for file in self.find_files():

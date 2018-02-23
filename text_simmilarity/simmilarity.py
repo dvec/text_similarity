@@ -79,16 +79,19 @@ class SimilarityAnalyzer:
         return result
 
     def train(self, texts, save=True, update=True, epochs=1):
-        iterator = map(prepare, texts)
-        self._w2v.build_vocab(iterator, update=update)
+        def get_data():
+            return (x for s in map(prepare, texts) for x in s)
+
+        self._w2v.build_vocab(get_data(), update=update)
         self.save()
 
         if save:
             callbacks = [_EpochSaver(self)]
         else:
             callbacks = []
+        print(len(list(get_data())))
 
-        self._w2v.train(iterator, total_examples=self._w2v.corpus_count, epochs=epochs, callbacks=callbacks)
+        self._w2v.train(get_data(), total_examples=self._w2v.corpus_count, epochs=epochs, callbacks=callbacks)
 
     def save(self):
         self.LOG.debug('Saving model...')
