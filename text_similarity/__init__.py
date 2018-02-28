@@ -1,2 +1,2 @@
-from .simmilarity import SimilarityAnalyzer
+from .similarity import SimilarityAnalyzer
 from .train import *
