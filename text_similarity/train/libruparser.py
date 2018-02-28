@@ -3,7 +3,7 @@ import re
 
 import requests
 
-from text_simmilarity.train.iparser import IParser
+from text_similarity.train.iparser import IParser
 
 
 class LibRuParser(IParser):

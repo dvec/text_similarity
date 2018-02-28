@@ -1,7 +1,7 @@
 from os import walk
 from os.path import isdir, sep
 
-from text_simmilarity.train.iparser import IParser
+from text_similarity.train.iparser import IParser
 
 
 class FileParser(IParser):

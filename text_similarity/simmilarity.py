@@ -7,7 +7,7 @@ from logging import getLogger
 
 from gensim.models.callbacks import CallbackAny2Vec
 
-from text_simmilarity.utils import stemmer, prepare
+from text_similarity.utils import stemmer, prepare
 
 
 class SimilarityAnalyzer:

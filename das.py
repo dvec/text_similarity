@@ -1,4 +1,4 @@
-from text_simmilarity import SimilarityAnalyzer
+from text_similarity import SimilarityAnalyzer
 
 categories = ['полететь на марс', 'заказать пиццу', 'погладить кота']
 
