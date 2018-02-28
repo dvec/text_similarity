@@ -1,11 +1,11 @@
 Text similarity analyzer for russian language
 ## Installation
 ```
-pip install git+https://github.com/dvec/text_simmilarity.git
+pip install git+https://github.com/dvec/text_similarity.git
 ```
 ## Similarity
 ```python
-from text_simmilarity import SimilarityAnalyzer
+from text_similarity import SimilarityAnalyzer
 analyzer = SimilarityAnalyzer.load()
 s1 = 'Сможем ли мы когда-либо достигнуть марса?'
 s2 = 'Как ты считашь, ступит ли когда-либо нога человека на поверхность красной планеты?'
@@ -15,7 +15,7 @@ print(analyzer.similarity(s1, s2))
 ```
 ## Categorization
 ```python
-from text_simmilarity import SimilarityAnalyzer
+from text_similarity import SimilarityAnalyzer
 
 categories = ['полететь на марс', 'заказать пиццу', 'погладить кота']
 questions = ['Привет, мурзик', 'Это пиццерия?', 'Эй, Илон, где звездный человек?']
@@ -30,7 +30,7 @@ if __name__ == '__main__':
 ```
 ## Training
 ```python
-from text_simmilarity import SimilarityAnalyzer, LibRuParser
+from text_similarity import SimilarityAnalyzer, LibRuParser
 
 if __name__ == '__main__':
     analyzer = SimilarityAnalyzer.empty()
@@ -38,7 +38,7 @@ if __name__ == '__main__':
 ```
 ## Continue training
 ```python
-from text_simmilarity import SimilarityAnalyzer, LibRuParser
+from text_similarity import SimilarityAnalyzer, LibRuParser
 
 if __name__ == '__main__':
     analyzer = SimilarityAnalyzer.load()
