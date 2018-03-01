@@ -1,5 +1,8 @@
+from logging import basicConfig
+
 from text_similarity import SimilarityAnalyzer
 
+basicConfig(level=0)
 categories = ['полететь на марс', 'заказать пиццу', 'погладить кота']
 
 if __name__ == '__main__':

@@ -6,7 +6,7 @@ from math import inf
 class IParser(metaclass=ABCMeta):
     LOG = getLogger(__name__)
 
-    def __init__(self, *args, count=inf, **kwargs):
+    def __init__(self, count=inf):
         self._count = count
 
     @abstractmethod
@@ -14,7 +14,6 @@ class IParser(metaclass=ABCMeta):
         raise NotImplementedError
 
     def __iter__(self):
-        print('__iter__ call')
         gen = self._get_data()
         left = self._count
 
