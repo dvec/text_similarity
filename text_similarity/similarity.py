@@ -11,24 +11,25 @@ from text_similarity.utils import stemmer, prepare
 
 
 class SimilarityAnalyzer:
-    DEFAULT_WV_PATH = './data/w2v/save'
+    DEFAULT_WV_PATH = './.w2v/save'
     LOG = getLogger(__name__)
 
     @classmethod
     def load(cls, wv_path=DEFAULT_WV_PATH):
-        if os.path.exists(wv_path):
-            begin = time()
-            w2v = Word2Vec.load(wv_path)
-            cls.LOG.info('Model is loaded in {} seconds'.format(time() - begin))
-            return SimilarityAnalyzer(w2v, wv_path)
-        else:
-            raise FileNotFoundError
+        begin = time()
+        w2v = Word2Vec.load(wv_path)
+        cls.LOG.info('Model is loaded in {} seconds'.format(time() - begin))
+        return SimilarityAnalyzer(w2v, wv_path)
 
     @classmethod
-    def empty(cls):
+    def empty(cls, wv_path=DEFAULT_WV_PATH):
         cls.LOG.debug('Creating empty model...')
         w2v = Word2Vec()
-        return SimilarityAnalyzer(w2v, cls.DEFAULT_WV_PATH)
+
+        assert os.path.isfile(wv_path)
+        os.makedirs(os.path.join(*wv_path.split(os.sep)[:-1]), exist_ok=True)
+
+        return SimilarityAnalyzer(w2v, wv_path)
 
     def __init__(self, w2v, save_wv):
         self._w2v = w2v
@@ -78,18 +79,21 @@ class SimilarityAnalyzer:
         self.LOG.debug('Similarity for "{}" and "{}": {}'.format(s1, s2, result))
         return result
 
-    def train(self, texts, save=True, update=True, epochs=1):
+    def train(self, texts, save=True, epochs=1):
         def get_data():
             return (x for s in map(prepare, texts) for x in s)
 
-        self._w2v.build_vocab(get_data(), update=update)
+        if len(self._w2v.wv.vectors):
+            self._w2v.build_vocab(get_data(), update=True)
+        else:
+            self._w2v.build_vocab(get_data())
+
         self.save()
 
         if save:
             callbacks = [_EpochSaver(self)]
         else:
             callbacks = []
-        print(len(list(get_data())))
 
         self._w2v.train(get_data(), total_examples=self._w2v.corpus_count, epochs=epochs, callbacks=callbacks)
 

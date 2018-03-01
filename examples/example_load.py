@@ -1,12 +1,12 @@
-from logging import basicConfig
+from logging import basicConfig, INFO
 
 from text_similarity import SimilarityAnalyzer
 
-basicConfig(level=0)
+basicConfig(level=INFO)
 categories = ['полететь на марс', 'заказать пиццу', 'погладить кота']
 
 if __name__ == '__main__':
-    analyzer = SimilarityAnalyzer.load()
+    analyzer = SimilarityAnalyzer.load('./examples/.w2v/save')
 
     while 1:
         s = input()
