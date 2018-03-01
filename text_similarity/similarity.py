@@ -26,7 +26,6 @@ class SimilarityAnalyzer:
         cls.LOG.debug('Creating empty model...')
         w2v = Word2Vec()
 
-        assert os.path.isfile(wv_path)
         os.makedirs(os.path.join(*wv_path.split(os.sep)[:-1]), exist_ok=True)
 
         return SimilarityAnalyzer(w2v, wv_path)

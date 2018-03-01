@@ -1,5 +1,5 @@
 from os import walk
-from os.path import isdir, sep
+from os.path import sep
 
 from text_similarity.train.iparser import IParser
 
