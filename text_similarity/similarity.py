@@ -22,7 +22,7 @@ class SimilarityAnalyzer:
         return SimilarityAnalyzer(w2v, wv_path)
 
     @classmethod
-    def empty(cls, wv_path=DEFAULT_WV_PATH):
+    def new(cls, wv_path=DEFAULT_WV_PATH):
         cls.LOG.debug('Creating empty model...')
         w2v = Word2Vec()
 
@@ -62,6 +62,14 @@ class SimilarityAnalyzer:
         result = r / max(cnt, 1)
         return result
 
+    @property
+    def min_count(self):
+        return self._w2v.vocabluary.min_count
+
+    @min_count.setter
+    def min_count(self, value):
+        self._w2v.vocabluary.min_count = value
+
     def similarity(self, s1, s2):
         s1, s2 = sorted((prepare(x) for x in (s1, s2)), key=len)
 
@@ -79,13 +87,15 @@ class SimilarityAnalyzer:
         return result
 
     def train(self, texts, save=True, epochs=1):
-        def get_data():
-            return (x for s in map(prepare, texts) for x in s)
+        def get_prepared_data():
+            return (x for s in map(get_prepared_data, texts) for x in s)
 
-        if len(self._w2v.wv.vectors):
-            self._w2v.build_vocab(get_data(), update=True)
+        if self._w2v.wv.vectors:
+            self._w2v.build_vocab(get_prepared_data(), update=True)
         else:
-            self._w2v.build_vocab(get_data())
+            self._w2v.build_vocab(get_prepared_data())
+            if not self._w2v.wv.vectors:
+                raise RuntimeError('Too small text. Try to set min_count to 1')
 
         self.save()
 
@@ -94,7 +104,7 @@ class SimilarityAnalyzer:
         else:
             callbacks = []
 
-        self._w2v.train(get_data(), total_examples=self._w2v.corpus_count, epochs=epochs, callbacks=callbacks)
+        self._w2v.train(get_prepared_data(), total_examples=self._w2v.corpus_count, epochs=epochs, callbacks=callbacks)
 
     def save(self):
         self.LOG.debug('Saving model...')

@@ -8,12 +8,12 @@ EPOCHS = 2
 basicConfig(level=INFO)
 
 if __name__ == '__main__':
-    parser = LibRuParser(count=EXAMPLES_COUNT)
+    parser = LibRuParser(count=EXAMPLES_COUNT, retry_count=0)
 
-    analyzer = SimilarityAnalyzer.empty()
-    analyzer.train(LibRuParser(count=EXAMPLES_COUNT), epochs=EPOCHS // 2)
+    analyzer = SimilarityAnalyzer.new()
+    analyzer.train(parser, epochs=EPOCHS // 2)
 
     del analyzer
 
     analyzer = SimilarityAnalyzer.load()
-    analyzer.train(LibRuParser(count=EXAMPLES_COUNT), epochs=EPOCHS // 2)
+    analyzer.train(parser, epochs=EPOCHS // 2)

@@ -6,8 +6,13 @@ from math import inf
 class IParser(metaclass=ABCMeta):
     LOG = getLogger(__name__)
 
-    def __init__(self, count=inf):
+    def __init__(self, count=inf, retry_count=10, retry_delay=10):
         self._count = count
+
+        assert retry_count >= 0
+        self._try_count = retry_count + 1
+        assert retry_delay >= 0
+        self._retry_delay = retry_delay
 
     @abstractmethod
     def _get_data(self):
