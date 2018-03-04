@@ -16,4 +16,4 @@ if __name__ == '__main__':
     del analyzer
 
     analyzer = SimilarityAnalyzer.load()
-    analyzer.train(parser, epochs=EPOCHS // 2)
+    analyzer.train(LibRuParser(count=EXAMPLES_COUNT+1), epochs=EPOCHS // 2)

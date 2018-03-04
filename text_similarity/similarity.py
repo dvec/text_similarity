@@ -22,9 +22,9 @@ class SimilarityAnalyzer:
         return SimilarityAnalyzer(w2v, wv_path)
 
     @classmethod
-    def new(cls, wv_path=DEFAULT_WV_PATH):
+    def new(cls, wv_path=DEFAULT_WV_PATH, **kwargs):
         cls.LOG.debug('Creating empty model...')
-        w2v = Word2Vec()
+        w2v = Word2Vec(**kwargs)
 
         os.makedirs(os.path.join(*wv_path.split(os.sep)[:-1]), exist_ok=True)
 
@@ -88,13 +88,13 @@ class SimilarityAnalyzer:
 
     def train(self, texts, save=True, epochs=1):
         def get_prepared_data():
-            return (x for s in map(get_prepared_data, texts) for x in s)
+            return (x for s in map(prepare, texts) for x in s)
 
-        if self._w2v.wv.vectors:
+        if len(self._w2v.wv.vectors):
             self._w2v.build_vocab(get_prepared_data(), update=True)
         else:
             self._w2v.build_vocab(get_prepared_data())
-            if not self._w2v.wv.vectors:
+            if not len(self._w2v.wv.vectors):
                 raise RuntimeError('Too small text. Try to set min_count to 1')
 
         self.save()
@@ -104,7 +104,8 @@ class SimilarityAnalyzer:
         else:
             callbacks = []
 
-        self._w2v.train(get_prepared_data(), total_examples=self._w2v.corpus_count, epochs=epochs, callbacks=callbacks)
+        total_examples = sum(map(lambda x: bool(len(x)), get_prepared_data()))
+        self._w2v.train(get_prepared_data(), total_examples=total_examples, epochs=epochs, callbacks=callbacks)
 
     def save(self):
         self.LOG.debug('Saving model...')
