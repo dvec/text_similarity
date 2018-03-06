@@ -3,7 +3,7 @@ from os.path import join, dirname
 
 setup(
     name='text_similarity',
-    version='0.2.2',
+    version='0.3.0',
     install_requires=[
         'requests==2.9.1',
         'gensim==3.3.0',

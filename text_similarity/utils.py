@@ -6,8 +6,12 @@ from stop_words import get_stop_words
 stemmer = Stemmer('ru')
 
 
+def filter_text(text):
+    return re.sub('[^а-я\s]', '', text.lower()).replace('.', ' . ')
+
+
 def prepare(text, min_len=2):
-    text = re.sub('[^а-я\s]', '', text.lower()).replace('.', ' . ')
+    text = filter_text(text.replace('ё', 'е'))
     result = [[]]
 
     for word in text.split():

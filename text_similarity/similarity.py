@@ -7,6 +7,7 @@ from logging import getLogger
 
 from gensim.models.callbacks import CallbackAny2Vec
 
+from text_similarity.spellchecker import SpellChecker
 from text_similarity.utils import stemmer, prepare
 
 
@@ -15,25 +16,28 @@ class SimilarityAnalyzer:
     LOG = getLogger(__name__)
 
     @classmethod
-    def load(cls, wv_path=DEFAULT_WV_PATH):
+    def load(cls, wv_path=DEFAULT_WV_PATH, use_spellchecker_cache=True):
         begin = time()
         w2v = Word2Vec.load(wv_path)
         cls.LOG.info('Model is loaded in {} seconds'.format(time() - begin))
-        return SimilarityAnalyzer(w2v, wv_path)
+        return SimilarityAnalyzer(w2v, wv_path, use_spellchecker_cache)
 
     @classmethod
-    def new(cls, wv_path=DEFAULT_WV_PATH, **kwargs):
+    def new(cls, wv_path=DEFAULT_WV_PATH, use_spellchecker_cache=True, **kwargs):
         cls.LOG.debug('Creating empty model...')
         w2v = Word2Vec(**kwargs)
 
         os.makedirs(os.path.join(*wv_path.split(os.sep)[:-1]), exist_ok=True)
 
-        return SimilarityAnalyzer(w2v, wv_path)
+        return SimilarityAnalyzer(w2v, wv_path, use_spellchecker_cache)
 
-    def __init__(self, w2v, save_wv):
+    def __init__(self, w2v, save_wv, use_spellchecker_cache):
         self._w2v = w2v
         self._save_wv = save_wv
         self._corpus_count = sum(x.count for x in self._w2v.wv.vocab.values())
+
+        self._spell_checker = SpellChecker(dict(map(lambda x: (x[0], x[1].count), self._w2v.wv.vocab.items())),
+                                           use_cache=use_spellchecker_cache)
 
     # Not the original tf-idf formula, may have some error
     def _tfidf(self, s, w):
@@ -71,7 +75,7 @@ class SimilarityAnalyzer:
         self._w2v.vocabluary.min_count = value
 
     def similarity(self, s1, s2):
-        s1, s2 = sorted((prepare(x) for x in (s1, s2)), key=len)
+        s1, s2 = map(lambda x: list(map(lambda x: list(map(self._spell_checker.correct, x)), prepare(x))), (s1, s2))
 
         if len(s1) > len(s2):
             s1, s2 = s2, s1
