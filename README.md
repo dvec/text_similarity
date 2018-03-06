@@ -3,6 +3,9 @@ Text similarity analyzer for russian language
 ```
 pip install git+https://github.com/dvec/text_similarity.git
 ```
+## Spell checker
+This library also has spell checker for russian
+
 ## Similarity
 ```python
 from text_similarity import SimilarityAnalyzer
@@ -33,7 +36,7 @@ if __name__ == '__main__':
 from text_similarity import SimilarityAnalyzer, LibRuParser
 
 if __name__ == '__main__':
-    analyzer = SimilarityAnalyzer.empty()
+    analyzer = SimilarityAnalyzer.new()
     analyzer.train(LibRuParser(1000), update=False)
 ```
 ## Continue training
