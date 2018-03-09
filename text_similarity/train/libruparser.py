@@ -23,7 +23,7 @@ class LibRuParser(IParser):
         super().__init__(**kwargs)
 
     def _curl(self, url):
-        for _ in range(self._retry):
+        for _ in range(self._retry + 1):
             try:
                 r = requests.get(url, timeout=self._timeout)
                 params = cgi.parse_header(r.headers.get('content-type'))[0]
