@@ -44,7 +44,7 @@ class SimilarityAnalyzer:
         return (s.count(w) / len(s)) * log(self._corpus_count / self._w2v.wv.vocab[w].count)
 
     def _sentence_similarity(self, s1, s2):
-        if len(s1) > len(s2):
+        if s1 < s2:
             s1, s2 = s2, s1
 
         r = 0
@@ -60,9 +60,9 @@ class SimilarityAnalyzer:
             for j in s2:
                 j = stemmer.stemWord(j)
                 if j in self._w2v.wv:
-                    similarity = self._w2v.wv.similarity(i, j) * self._tfidf(s2, j)
+                    similarity = self._w2v.wv.similarity(i, j)
                     m = max(m, similarity)
-            r += m
+            r += m * self._tfidf(s1, i)
         result = r / max(cnt, 1)
         return result
 
@@ -76,8 +76,7 @@ class SimilarityAnalyzer:
 
     def similarity(self, s1, s2):
         s1, s2 = map(lambda x: list(map(lambda x: list(map(self._spell_checker.correct, x)), prepare(x))), (s1, s2))
-
-        if len(s1) > len(s2):
+        if s1 < s2:
             s1, s2 = s2, s1
 
         r = 0

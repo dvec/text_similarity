@@ -14,21 +14,23 @@ class LibRuParser(IParser):
     PATTERN_3 = re.compile('[^а-яА-Я\s]')
 
     DEFAULT_MIRROR = 'http://kulichki.com/moshkow/'
+    DEFAULT_TIMEOUT = 5
 
-    def __init__(self, mirror=DEFAULT_MIRROR, **kwargs):
+    def __init__(self, mirror=DEFAULT_MIRROR, timeout=DEFAULT_TIMEOUT, retry=0, **kwargs):
         self._mirror = mirror
+        self._timeout = timeout
+        self._retry = retry
         super().__init__(**kwargs)
 
     def _curl(self, url):
-        for _ in range(self._try_count):
+        for _ in range(self._retry):
             try:
-                r = requests.get(url)
+                r = requests.get(url, timeout=self._timeout)
                 params = cgi.parse_header(r.headers.get('content-type'))[0]
                 server_encoding = ('charset' in params) and params['charset'].strip("'\"") or None
                 r.encoding = server_encoding or r.apparent_encoding
             except IOError as e:
                 getLogger(__name__).error(e)
-                sleep(self._retry_delay)
             else:
                 return r.text
 
