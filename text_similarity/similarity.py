@@ -16,28 +16,29 @@ class SimilarityAnalyzer:
     LOG = getLogger(__name__)
 
     @classmethod
-    def load(cls, wv_path=DEFAULT_WV_PATH, use_spellchecker_cache=True):
+    def load(cls, wv_path=DEFAULT_WV_PATH):
         begin = time()
         w2v = Word2Vec.load(wv_path)
         cls.LOG.info('Model is loaded in {} seconds'.format(time() - begin))
-        return SimilarityAnalyzer(w2v, wv_path, use_spellchecker_cache)
+        return SimilarityAnalyzer(w2v, wv_path)
 
     @classmethod
-    def new(cls, wv_path=DEFAULT_WV_PATH, use_spellchecker_cache=True, **kwargs):
+    def new(cls, wv_path=DEFAULT_WV_PATH, **kwargs):
         cls.LOG.debug('Creating empty model...')
         w2v = Word2Vec(**kwargs)
 
         os.makedirs(os.path.join(*wv_path.split(os.sep)[:-1]), exist_ok=True)
 
-        return SimilarityAnalyzer(w2v, wv_path, use_spellchecker_cache)
+        return SimilarityAnalyzer(w2v, wv_path)
 
-    def __init__(self, w2v, save_wv, use_spellchecker_cache):
+    def __init__(self, w2v, save_wv):
         self._w2v = w2v
         self._save_wv = save_wv
         self._corpus_count = sum(x.count for x in self._w2v.wv.vocab.values())
+        self._build_spell_checker()
 
-        self._spell_checker = SpellChecker(dict(map(lambda x: (x[0], x[1].count), self._w2v.wv.vocab.items())),
-                                           use_cache=use_spellchecker_cache)
+    def _build_spell_checker(self):
+        self._spell_checker = SpellChecker(dict(map(lambda x: (x[0], x[1].count), self._w2v.wv.vocab.items())))
 
     # Not the original tf-idf formula, may have some error
     def _tfidf(self, s, w):
@@ -56,7 +57,7 @@ class SimilarityAnalyzer:
                 continue
             cnt += 1
 
-            m = -float('inf')
+            m = 0
             for j in s2:
                 j = stemmer.stemWord(j)
                 if j in self._w2v.wv:
@@ -81,7 +82,7 @@ class SimilarityAnalyzer:
 
         r = 0
         for i in s1:
-            m = -float('inf')
+            m = 0
             for j in s2:
                 m = max(m, self._sentence_similarity(i, j))
             r += m
@@ -109,6 +110,7 @@ class SimilarityAnalyzer:
 
         total_examples = sum(map(lambda x: bool(len(x)), get_prepared_data()))
         self._w2v.train(get_prepared_data(), total_examples=total_examples, epochs=epochs, callbacks=callbacks)
+        self._build_spell_checker()
 
     def save(self):
         self.LOG.debug('Saving model...')
