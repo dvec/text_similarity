@@ -45,7 +45,7 @@ class SimilarityAnalyzer:
         return (s.count(w) / len(s)) * log(self._corpus_count / self._w2v.wv.vocab[w].count)
 
     def _sentence_similarity(self, s1, s2):
-        if s1 < s2:
+        if len(s1) < len(s2):
             s1, s2 = s2, s1
 
         r = 0
@@ -77,7 +77,7 @@ class SimilarityAnalyzer:
 
     def similarity(self, s1, s2):
         s1, s2 = map(lambda x: list(map(lambda x: list(map(self._spell_checker.correct, x)), prepare(x))), (s1, s2))
-        if s1 < s2:
+        if len(s1) < len(s2):
             s1, s2 = s2, s1
 
         r = 0
